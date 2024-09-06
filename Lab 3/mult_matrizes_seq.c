@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
    }
    #else
    if(argc<4) {
-      printf("Digite: %s <arquivo matriz 1 de entrada> <arquivo matriz 2 de entrada> <arquivo matriz de saída> <arquivo matriz de saída>\n", argv[0]);
+      printf("Digite: %s <arquivo matriz 1 de entrada> <arquivo matriz 2 de entrada> <arquivo matriz de saída>\n", argv[0]);
       return 1;
    }
    #endif
