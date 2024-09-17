@@ -12,12 +12,13 @@ pthread_mutex_t mutex;
 pthread_cond_t cond;
 pthread_cond_t cond_extra;
 int qtde_prints = 0;
-//control = 0;
+int control = 0;
 
 // Função executada pelas threads principais
 void *ExecutaTarefa(void *arg){
     long int id = (long int) arg;
     printf("Thread : %ld esta executando...\n", id);
+    control = 1;
 
     for(int i = 0; i< 100000; i++){
         //--entrada na SC
@@ -32,6 +33,8 @@ void *ExecutaTarefa(void *arg){
         //--saida da SC
         pthread_mutex_unlock(&mutex);
     }
+
+    pthread_cond_signal(&cond_extra); //--libera thread de impressão (thread extra) se ela estiver bloqueada
     printf("Thread : %ld terminou!\n", id);
     pthread_exit(NULL);
 }
@@ -39,6 +42,14 @@ void *ExecutaTarefa(void *arg){
 //funcao executada pela thread de log
 void *extra (void *args) {
     printf("Extra : esta executando...\n");
+
+    //--esse trecho incial garante que se a thread extra começar primeiro não será impresso o valor 'soma = 0' duas vezes
+    pthread_mutex_lock(&mutex); //--início SC crítica
+    if(!control){ //--se a thread extra começar antes ela aguarda o início da outra thread verificando a variável 'control'. Se ela for 0 é porque a outra thread não começou (ela altera o valor para 1).
+      pthread_cond_wait(&cond_extra, &mutex); //--aguarda sinal da thread principal para continuar iteração. Isso evita que a threa extra fique executando desnecessariamente.
+    }
+    pthread_mutex_unlock(&mutex); // fim SC crítica
+
 
     while(qtde_prints < 20){
         pthread_mutex_lock(&mutex); //--início SC crítica
@@ -48,6 +59,7 @@ void *extra (void *args) {
         pthread_mutex_unlock(&mutex); // fim SC crítica
     }
 
+    //pthread_cond_signal(&cond); //--libera a thread principal para continuar suas iterações após realiza a saída no terminal
     printf("Extra : terminou!\n");
     pthread_exit(NULL);  
 }
