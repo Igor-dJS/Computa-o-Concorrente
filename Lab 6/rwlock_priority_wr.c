@@ -54,11 +54,11 @@ void SaiLeitura(long int id)
 void EntraEscrita(long int id)
 {
     pthread_mutex_lock(&mutex);
-    solicitacao = 1; // solicita escrita
     printf("Thread %ld solicitou escrita.\n", id); // log de solicitação
     // se há leitores lendo ou escritor escrevendo aguarda
     while ((leit > 0) || (escr > 0))
     {
+        solicitacao = 1; // solicita escrita
         if (leit > 0){
             printf("Thread %ld aguardando leitores terminarem. Leitores = %d\n", id, leit);
         } else {
