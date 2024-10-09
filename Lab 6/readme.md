@@ -48,3 +48,7 @@ O tempo de execução tende a aumentar. Isso acontece porque estamos utilizando 
 4.
 Em cenários em que o número de leituras (consulta) representa uma porcentagem muito maior que de escritas (inserção e remoção).
 
+# Exemplo de execução 
+Número de operações reduzido para melhor visualização dos logs
+![alt text](image-1.png)
+![alt text](image-2.png)
