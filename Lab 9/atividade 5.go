@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// Função das GoRoutines
 func ehPrimo(n int64) bool {
 	if n <= 1 {
 		return false
@@ -37,14 +38,15 @@ func main() {
 	var M int
 	var N int64
 
-
+	// Converte M recebido por linha de comando para int
 	M, err1 := strconv.Atoi(os.Args[1])
 	if err1 != nil {
 		fmt.Printf("Erro ao converter o argumento para inteiro: %v\n", err1)
 		return
 	}
 
-	N, err2 := strconv.ParseInt(os.Args[2], 10, 64)
+	// Converte N recebido por linha de comando para int64
+	N, err2 := strconv.ParseInt(os.Args[2], 10, 64) // ParseInt com argumento para base 10 e btisize 64
 	if err2 != nil {
 		fmt.Printf("Erro ao converter o argumento para inteiro: %v\n", err2)
 		return
@@ -52,10 +54,11 @@ func main() {
 
 	var wg sync.WaitGroup
 
+	// Cria canal para as GoRoutines receberem o argumento e canal para a main receber resultado das GoRoutines que verificam a primalidade
 	numeros := make(chan int64, N)
 	resultados := make(chan bool)
 
-	// Goroutines para verificar a primalidade
+	// Cria as Goroutines para verificar a primalidade
 	for i := 0; i < M; i++ {
 		wg.Add(1)
 		go func() {
@@ -66,11 +69,13 @@ func main() {
 		}()
 	}
 
+	// GoRoutine que irá esperar as GoRoutines de primalidade terminarem para depois fechar o canal de resultados
 	go func() {
 		wg.Wait()
 		close(resultados)
 	}()
 
+	// Passa argumento para as GoRoutines via canal "numeros". Como executam todos a mesma tarefa (verificar a primalidade) não importa qual GoRoutine irá receber qual argumento.
 	for i := int64(1); i <= N; i++ {
 		numeros <- i
 	}
@@ -85,5 +90,6 @@ func main() {
 		}
 	}
 
+	// Imprime quantidade de primos encontrados
 	fmt.Printf("Total de números primos encontrados: %d\n", count)
 }

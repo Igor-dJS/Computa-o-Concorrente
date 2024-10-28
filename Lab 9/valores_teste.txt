@@ -1,0 +1,2 @@
+Para N = 100 -> Número de primos esperados encontrado é 25
+Para N = 1000 -> Número de primos esperados encontrado é 168
